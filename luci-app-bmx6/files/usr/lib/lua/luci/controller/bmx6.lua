@@ -69,7 +69,7 @@ function index()
 	entry(place,call("action_nodes_j"),"Nodes",1)
 	table.remove(place)
 
-		--- links
+	--- links
 	table.insert(place,"Links")
 	entry(place,call("action_links"),"Links",2).leaf = true
 	table.remove(place)
@@ -204,7 +204,7 @@ function action_links(host)
 			devlinks[l.viaDev] = {}
 		end
 		for _,l in ipairs(links) do
-			l.globalId = luci.util.split(l.globalId,'.')[1]
+			l.name = luci.util.split(l.name,'.')[1]
 			table.insert(devlinks[l.viaDev],l)
 		end
 	end
@@ -240,10 +240,10 @@ function action_topology()
 	    			if first then
 	    				first = false
 	    			else
-	    				topology = topology .. ', '
+						topology = topology .. ', '
 	    			end
 	    
-	    			topology = topology .. '{ "globalId": "%s", "links": [' %o.globalId:match("^[^%.]+")
+					topology = topology .. '{ "name": "%s", "links": [' %o.name
 	    
 	    			local first2 = true
 	    
@@ -252,10 +252,10 @@ function action_topology()
 	    					first2 = false
 	    				else
 	    					topology = topology .. ', '
-	    				end
-	    
-	    				topology = topology .. '{ "globalId": "%s", "rxRate": %s, "txRate": %s }'
-	    					%{ l.globalId:match("^[^%.]+"), l.rxRate, l.txRate }
+						end
+						name = l.name or l.llocalIp or "unknown"
+						topology = topology .. '{ "name": "%s", "rxRate": %s, "txRate": %s }'
+							%{ name, l.rxRate, l.txRate }
 	    
 	    			end
 	    

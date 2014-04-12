@@ -13,7 +13,7 @@ PID6=/var/run/olsrd.ipv6.pid
 OLSRD_OLSRD_SCHEMA='ignore:internal config_file:internal DebugLevel=0 AllowNoInt=yes Willingness=6 SmartGateway:bool=0 LinkQualityFishEye=0'
 OLSRD_IPCCONNECT_SCHEMA='ignore:internal Host:list Net:list2'
 OLSRD_LOADPLUGIN_SCHEMA='ignore:internal library:internal Host4:list Net4:list2 Host:list Net:list2 Host6:list Net6:list2 Ping:list redistribute:list NonOlsrIf:list name:list lat lon latlon_infile HNA:list2 hosts:list2'
-OLSRD_INTERFACE_SCHEMA='ignore:internal interface:internal AutoDetectChanges:bool HelloInterval=0.5'
+OLSRD_INTERFACE_SCHEMA='ignore:internal interface:internal AutoDetectChanges:bool LinkQualityMult:list2 HelloInterval=0.5'
 OLSRD_INTERFACE_DEFAULTS_SCHEMA='AutoDetectChanges:bool'
 
 T='	'
@@ -732,9 +732,9 @@ olsrd_setup_smartgw_rules() {
 					$IP6T -I input_rule -i $IFACE -p 4 -j ACCEPT
 				done
 			else
+				$IP4T -t nat -I postrouting_rule -o tnl_+ -j MASQUERADE
 				for IPT in $IP4T $IP6T; do
 					$IPT -I forwarding_rule -o tnl_+ -j ACCEPT
-					$IPT -t nat -I postrouting_rule -o tnl_+ -j MASQUERADE
 					if [ "$nowan"="0" ]; then
 						for IFACE in $wanifnames; do
 							$IPT -A forwarding_rule -i tunl0 -o $IFACE -j ACCEPT

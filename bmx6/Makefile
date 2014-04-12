@@ -31,8 +31,8 @@ PKG_SOURCE_PROTO:=git
 #PKG_SOURCE_URL:=git://bmx6.net/bmx6.git
 PKG_SOURCE_URL:=git://github.com/axn/bmx6.git
 
-PKG_REV:=1d022e3f0ae0a2954c90b18fdfbcc178d7437605
-PKG_VERSION:=r2013080406
+PKG_REV:=4d3819b255540915408b827ae03fd92cbd7b4bdd
+PKG_VERSION:=r2014030801
 PKG_RELEASE:=4
 
 PKG_SOURCE_VERSION:=$(PKG_REV)
@@ -79,7 +79,6 @@ define Package/bmx6-uci-config
   TITLE:=configuration plugin based on uci (recommended!)
 endef
 
-
 define Package/bmx6-json
   $(call Package/bmx6/Default)
   DEPENDS:=bmx6 +libjson
@@ -92,10 +91,16 @@ define Package/bmx6-sms
   TITLE:=sms plugin
 endef
 
-define Package/bmx6-quagga
+#define Package/bmx6-quagga
+#  $(call Package/bmx6/Default)
+#  DEPENDS:=bmx6 +qmp-quagga @BROKEN
+#  TITLE:=bmx6 quagga plugin to redistribute/export routes (needs manet/bmx6 patched quagga 0.99.21)
+#endef
+
+define Package/bmx6-table
   $(call Package/bmx6/Default)
-  DEPENDS:=bmx6 +qmp-quagga @BROKEN
-  TITLE:=bmx6 quagga plugin to redistribute/export routes (needs manet/bmx6 patched quagga 0.99.21)
+  DEPENDS:=bmx6
+  TITLE:=bmx6 table plugin to automatic announce routing-table routes via ip6ip tunnels
 endef
 
 define Build/Configure
@@ -106,17 +111,14 @@ define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) $(MAKE_ARGS)
 endef
 
-
 define Package/bmx6/install
 	$(INSTALL_DIR) $(1)/usr/sbin $(1)/etc/config $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bmx6 $(1)/usr/sbin/bmx6
 endef
 
-
 define Package/bmx6-uci-config/conffiles
 /etc/config/bmx6
 endef
-
 
 define Package/bmx6-uci-config/install
 	$(INSTALL_DIR) $(1)/usr/lib $(1)/etc/config $(1)/etc/init.d
@@ -135,14 +137,19 @@ define Package/bmx6-sms/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lib/bmx6_sms/bmx6_sms.so $(1)/usr/lib/bmx6_sms.so
 endef
 
-define Package/bmx6-quagga/install
+define Package/bmx6-table/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lib/bmx6_quagga/bmx6_quagga.so $(1)/usr/lib/bmx6_quagga.so
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lib/bmx6_table/bmx6_table.so $(1)/usr/lib/bmx6_table.so
 endef
+
+#define Package/bmx6-quagga/install
+#	$(INSTALL_DIR) $(1)/usr/lib
+#	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lib/bmx6_quagga/bmx6_quagga.so $(1)/usr/lib/bmx6_quagga.so
+#endef
 
 $(eval $(call BuildPackage,bmx6))
 $(eval $(call BuildPackage,bmx6-uci-config))
 $(eval $(call BuildPackage,bmx6-json))
 $(eval $(call BuildPackage,bmx6-sms))
-$(eval $(call BuildPackage,bmx6-quagga))
-
+#$(eval $(call BuildPackage,bmx6-quagga))
+$(eval $(call BuildPackage,bmx6-table))
